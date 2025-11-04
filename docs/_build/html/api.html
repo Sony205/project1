@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API‑документация &#8212; booklib 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Быстрый старт" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="api">
+<h1>API‑документация<a class="headerlink" href="#api" title="Link to this heading">¶</a></h1>
+<section id="module-booklib">
+<span id="booklib"></span><h2>Пакет <code class="docutils literal notranslate"><span class="pre">booklib</span></code><a class="headerlink" href="#module-booklib" title="Link to this heading">¶</a></h2>
+<p>Пакет <cite>booklib</cite> — CLI-приложение для ведения домашней библиотеки.</p>
+<dl class="simple">
+<dt>В пакете реализованы:</dt><dd><ul class="simple">
+<li><p>модели данных (<a class="reference internal" href="#module-booklib.models" title="booklib.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">booklib.models</span></code></a>),</p></li>
+<li><p>файловое хранилище JSON и CSV-импорт/экспорт (<a class="reference internal" href="#module-booklib.storage" title="booklib.storage"><code class="xref py py-mod docutils literal notranslate"><span class="pre">booklib.storage</span></code></a>),</p></li>
+<li><p>фильтры поиска и сортировки (<a class="reference internal" href="#module-booklib.filters" title="booklib.filters"><code class="xref py py-mod docutils literal notranslate"><span class="pre">booklib.filters</span></code></a>),</p></li>
+<li><p>обработчики команд CLI (<a class="reference internal" href="#module-booklib.commands" title="booklib.commands"><code class="xref py py-mod docutils literal notranslate"><span class="pre">booklib.commands</span></code></a>).</p></li>
+</ul>
+</dd>
+</dl>
+<p>Пакет рассчитан на использование из командной строки через модуль <a class="reference internal" href="#module-main" title="main"><code class="xref py py-mod docutils literal notranslate"><span class="pre">main</span></code></a>.
+Документация сгенерирована Sphinx и доступна в каталоге <code class="docutils literal notranslate"><span class="pre">docs</span></code>.</p>
+</section>
+<section id="module-booklib.models">
+<span id="booklib-models"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">booklib.models</span></code><a class="headerlink" href="#module-booklib.models" title="Link to this heading">¶</a></h2>
+<p>Модели данных для библиотеки.</p>
+<p>Содержит dataclass <a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><code class="xref py py-class docutils literal notranslate"><span class="pre">Book</span></code></a> — основную сущность каталога,
+а также служебные функции для генерации метаданных.
+Докстринги оформлены в стиле Google (поддерживаются Sphinx Napoleon).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="booklib.models.Book">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">booklib.models.</span></span><span class="sig-name descname"><span class="pre">Book</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isbn:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pages:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quotes:</span> <span class="pre">~typing.List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">added_at:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/models.html#Book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.models.Book" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Книга в домашней библиотеке.</p>
+<dl class="simple">
+<dt>Атрибуты:</dt><dd><p>id (str): UUID книги в текстовом виде.
+title (str): Название книги.
+author (str): Автор(ы) книги.
+year (Optional[int]): Год издания (если известен).
+genre (Optional[str]): Жанр.
+tags (List[str]): Список тегов.
+isbn (Optional[str]): ISBN (если есть).
+pages (Optional[int]): Количество страниц.
+quotes (List[str]): Цитаты, привязанные к книге.
+added_at (str): Момент добавления в ISO 8601.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.added_at">
+<span class="sig-name descname"><span class="pre">added_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#booklib.models.Book.added_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.author">
+<span class="sig-name descname"><span class="pre">author</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#booklib.models.Book.author" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.models.Book.create">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isbn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></span><a class="reference internal" href="_modules/booklib/models.html#Book.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.models.Book.create" title="Link to this definition">¶</a></dt>
+<dd><p>Фабричный метод создания новой книги с генерируемым UUID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Название книги.</p></li>
+<li><p><strong>author</strong> – Автор(ы) книги.</p></li>
+<li><p><strong>year</strong> – Год издания.</p></li>
+<li><p><strong>genre</strong> – Жанр.</p></li>
+<li><p><strong>tags</strong> – Список тегов.</p></li>
+<li><p><strong>isbn</strong> – ISBN, если есть.</p></li>
+<li><p><strong>pages</strong> – Количество страниц.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Экземпляр книги со сгенерированным <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.models.Book.from_dict">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></span><a class="reference internal" href="_modules/booklib/models.html#Book.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.models.Book.from_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Создаёт книгу из словаря (например, прочитанного из JSON).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Словарь полей.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Восстановленный объект книги.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.genre">
+<span class="sig-name descname"><span class="pre">genre</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#booklib.models.Book.genre" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#booklib.models.Book.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.isbn">
+<span class="sig-name descname"><span class="pre">isbn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#booklib.models.Book.isbn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#booklib.models.Book.pages" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.quotes">
+<span class="sig-name descname"><span class="pre">quotes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#booklib.models.Book.quotes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#booklib.models.Book.tags" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.title">
+<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#booklib.models.Book.title" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.models.Book.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/models.html#Book.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.models.Book.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Преобразует книгу в словарь для сериализации.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Словарь полей книги.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.models.Book.year">
+<span class="sig-name descname"><span class="pre">year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#booklib.models.Book.year" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-booklib.storage">
+<span id="booklib-storage"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">booklib.storage</span></code><a class="headerlink" href="#module-booklib.storage" title="Link to this heading">¶</a></h2>
+<p>Файловое хранилище библиотеки (JSON + CSV).</p>
+<p>По умолчанию база данных хранится в файле <code class="docutils literal notranslate"><span class="pre">library.json</span></code> рядом с <code class="docutils literal notranslate"><span class="pre">main.py</span></code>
+(то есть в корне проекта). Путь можно переопределить опцией <code class="docutils literal notranslate"><span class="pre">--db</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="booklib.storage.Storage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">booklib.storage.</span></span><span class="sig-name descname"><span class="pre">Storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/storage.html#Storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>JSON‑хранилище книжной библиотеки.</p>
+<dl class="simple">
+<dt>Приоритет путей:</dt><dd><ol class="arabic simple">
+<li><p>явный <code class="docutils literal notranslate"><span class="pre">path</span></code> (из <code class="docutils literal notranslate"><span class="pre">--db</span></code>);</p></li>
+<li><p>иначе <code class="docutils literal notranslate"><span class="pre">DEFAULT_PATH</span></code> (<code class="docutils literal notranslate"><span class="pre">./library.json</span></code> рядом с <code class="docutils literal notranslate"><span class="pre">main.py</span></code>).</p></li>
+</ol>
+</dd>
+</dl>
+<p>Обнаружение дубликатов выполняется по <code class="docutils literal notranslate"><span class="pre">ISBN</span></code> или по тройке
+(<code class="docutils literal notranslate"><span class="pre">title</span></code> + <code class="docutils literal notranslate"><span class="pre">author</span></code> + <code class="docutils literal notranslate"><span class="pre">year</span></code>).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="booklib.storage.Storage.CSV_FIELDS">
+<span class="sig-name descname"><span class="pre">CSV_FIELDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['id',</span> <span class="pre">'title',</span> <span class="pre">'author',</span> <span class="pre">'year',</span> <span class="pre">'genre',</span> <span class="pre">'tags',</span> <span class="pre">'isbn',</span> <span class="pre">'pages',</span> <span class="pre">'quotes',</span> <span class="pre">'added_at']</span></em><a class="headerlink" href="#booklib.storage.Storage.CSV_FIELDS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.add" title="Link to this definition">¶</a></dt>
+<dd><p>Добавляет книгу в хранилище.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book</strong> – Экземпляр <code class="xref py py-class docutils literal notranslate"><span class="pre">Book</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(True,</span> <span class="pre">None)</span></code> при успехе;             <code class="docutils literal notranslate"><span class="pre">(False,</span> <span class="pre">existing)</span></code> если найден дубликат.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[bool, Optional[<a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Удаляет книгу по UUID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book_id</strong> – Идентификатор книги.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> — если запись была удалена.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.export_csv">
+<span class="sig-name descname"><span class="pre">export_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.export_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.export_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Экспортирует базу в CSV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>csv_path</strong> – Путь к целевому CSV-файлу.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Количество экспортированных записей.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.get" title="Link to this definition">¶</a></dt>
+<dd><p>Возвращает книгу по UUID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book_id</strong> – Идентификатор книги.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Книга или <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.import_csv">
+<span class="sig-name descname"><span class="pre">import_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.import_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.import_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Импортирует записи из CSV.</p>
+<dl class="simple">
+<dt>Поведение:</dt><dd><ul class="simple">
+<li><p>если <code class="docutils literal notranslate"><span class="pre">id</span></code> совпал — запись обновляется;</p></li>
+<li><p>если дубликат по полям — пропускается;</p></li>
+<li><p>иначе — добавляется как новая.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>csv_path</strong> – Путь к исходному CSV.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Количество добавленных/обновлённых записей.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.load" title="Link to this definition">¶</a></dt>
+<dd><p>Загружает все книги в объекты <code class="xref py py-class docutils literal notranslate"><span class="pre">Book</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Список книг.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">books</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.save" title="Link to this definition">¶</a></dt>
+<dd><p>Сохраняет список книг в файл.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>books</strong> – Записи для сохранения.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="booklib.storage.Storage.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/booklib/storage.html#Storage.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage.Storage.update" title="Link to this definition">¶</a></dt>
+<dd><p>Обновляет существующую запись книги.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book</strong> – Книга с обновлёнными полями.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> — если запись найдена и обновлена.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-booklib.filters">
+<span id="booklib-filters"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">booklib.filters</span></code><a class="headerlink" href="#module-booklib.filters" title="Link to this heading">¶</a></h2>
+<p>Фильтры поиска и сортировки.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.filters.search">
+<span class="sig-prename descclassname"><span class="pre">booklib.filters.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">books</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isbn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/filters.html#search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.filters.search" title="Link to this definition">¶</a></dt>
+<dd><p>Выполняет поиск по коллекции книг.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>books</strong> – Коллекция книг.</p></li>
+<li><p><strong>query</strong> – Общая строка поиска (по автору и названию).</p></li>
+<li><p><strong>author</strong> – Автор.</p></li>
+<li><p><strong>title</strong> – Название.</p></li>
+<li><p><strong>year</strong> – Год издания.</p></li>
+<li><p><strong>genre</strong> – Жанр.</p></li>
+<li><p><strong>tag</strong> – Тег (ищется среди списка тегов).</p></li>
+<li><p><strong>isbn</strong> – ISBN.</p></li>
+<li><p><strong>exact</strong> – Если <code class="docutils literal notranslate"><span class="pre">True</span></code>, строки сравниваются строго (без подстрок).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Отфильтрованные книги.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.filters.sort_books">
+<span class="sig-prename descclassname"><span class="pre">booklib.filters.</span></span><span class="sig-name descname"><span class="pre">sort_books</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">books</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'title'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/filters.html#sort_books"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.filters.sort_books" title="Link to this definition">¶</a></dt>
+<dd><p>Сортирует книги по указанному полю с необязательным вторичным ключом.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>books</strong> – Коллекция книг.</p></li>
+<li><p><strong>by</strong> – Поле сортировки (<code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">author</span></code>, <code class="docutils literal notranslate"><span class="pre">year</span></code>, <code class="docutils literal notranslate"><span class="pre">genre</span></code>, <code class="docutils literal notranslate"><span class="pre">added_at</span></code>).</p></li>
+<li><p><strong>reverse</strong> – Обратный порядок.</p></li>
+<li><p><strong>secondary</strong> – Вторичное поле сортировки (или <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Отсортированный список.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book">Book</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-booklib.commands">
+<span id="booklib-commands"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">booklib.commands</span></code><a class="headerlink" href="#module-booklib.commands" title="Link to this heading">¶</a></h2>
+<p>Обработчики команд CLI для <cite>booklib</cite>.</p>
+<p>Каждая функция <code class="docutils literal notranslate"><span class="pre">cmd_*</span></code> привязана к подкоманде argparse в <a class="reference internal" href="#module-main" title="main"><code class="xref py py-mod docutils literal notranslate"><span class="pre">main</span></code></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_add">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_add" title="Link to this definition">¶</a></dt>
+<dd><p>Добавляет книгу из аргументов командной строки.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_add_quote">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_add_quote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_add_quote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_add_quote" title="Link to this definition">¶</a></dt>
+<dd><p>Добавляет цитату к книге (дубликаты игнорируются регистронезависимо).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_del_quote">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_del_quote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_del_quote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_del_quote" title="Link to this definition">¶</a></dt>
+<dd><p>Удаляет цитату по индексу (1..n) у указанной книги.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_export_csv">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_export_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_export_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_export_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Экспортирует текущую базу в CSV.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_find">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_find" title="Link to this definition">¶</a></dt>
+<dd><p>Выполняет поиск и печатает результаты.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_import_csv">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_import_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_import_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_import_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Импортирует записи из CSV (см. <code class="xref py py-meth docutils literal notranslate"><span class="pre">Storage.import_csv()</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_list">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_list" title="Link to this definition">¶</a></dt>
+<dd><p>Выводит список книг (с опциональным поиском/сортировкой).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_remove">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_remove" title="Link to this definition">¶</a></dt>
+<dd><p>Удаляет книгу по UUID/префиксу.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_show">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_show" title="Link to this definition">¶</a></dt>
+<dd><p>Показывает подробную информацию по книге.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_sort">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_sort" title="Link to this definition">¶</a></dt>
+<dd><p>Сортирует и печатает список книг.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="booklib.commands.cmd_update">
+<span class="sig-prename descclassname"><span class="pre">booklib.commands.</span></span><span class="sig-name descname"><span class="pre">cmd_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.storage.Storage" title="booklib.storage.Storage"><span class="pre">Storage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booklib/commands.html#cmd_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.commands.cmd_update" title="Link to this definition">¶</a></dt>
+<dd><p>Обновляет поля книги. Поля, не указанные в аргументах, остаются без изменений.</p>
+</dd></dl>
+
+</section>
+<section id="module-main">
+<span id="main"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">main</span></code><a class="headerlink" href="#module-main" title="Link to this heading">¶</a></h2>
+<p>Точка входа CLI-приложения <cite>booklib</cite>.</p>
+<p>Поддерживаемые команды см. <code class="docutils literal notranslate"><span class="pre">booklib</span> <span class="pre">--help</span></code>. Для генерации документации
+используется Sphinx (<code class="docutils literal notranslate"><span class="pre">docs/</span></code>).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="main.build_parser">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">build_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArgumentParser</span></span></span><a class="reference internal" href="_modules/main.html#build_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.build_parser" title="Link to this definition">¶</a></dt>
+<dd><p>Создаёт парсер аргументов командной строки.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Сконфигурированный парсер.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>argparse.ArgumentParser</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.main">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main" title="Link to this definition">¶</a></dt>
+<dd><p>Запускает парсер и делегирует выполнение выбранной команде.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.positive_int">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">positive_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/main.html#positive_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.positive_int" title="Link to this definition">¶</a></dt>
+<dd><p>Проверяет, что число положительное (&gt;0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>val</strong> – Строка с целым числом.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Значение, преобразованное к int.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>argparse.ArgumentTypeError</strong> – Если число &lt;= 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">booklib</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Быстрый старт</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API‑документация</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-booklib">Пакет <code class="docutils literal notranslate"><span class="pre">booklib</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-booklib.models">Модуль <code class="docutils literal notranslate"><span class="pre">booklib.models</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-booklib.storage">Модуль <code class="docutils literal notranslate"><span class="pre">booklib.storage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-booklib.filters">Модуль <code class="docutils literal notranslate"><span class="pre">booklib.filters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-booklib.commands">Модуль <code class="docutils literal notranslate"><span class="pre">booklib.commands</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-main">Модуль <code class="docutils literal notranslate"><span class="pre">main</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Быстрый старт</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, booklib authors.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
