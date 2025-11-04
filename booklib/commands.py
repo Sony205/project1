@@ -1,3 +1,7 @@
+"""Обработчики команд CLI для `booklib`.
+
+Каждая функция ``cmd_*`` привязана к подкоманде argparse в :mod:`main`.
+"""
 from __future__ import annotations
 from typing import List, Optional
 import re
@@ -6,6 +10,12 @@ from .storage import Storage
 from .filters import search, sort_books
 
 def _print_table(books: List[Book], limit: Optional[int] = None) -> None:
+    """Печатает таблицу с краткой информацией о книгах.
+
+    Args:
+        books: Список книг.
+        limit: Максимальное количество выводимых записей (или ``None``).
+    """
     rows = []
     subset = books[:limit] if limit else books
     for b in subset:
@@ -26,9 +36,17 @@ def _print_table(books: List[Book], limit: Optional[int] = None) -> None:
 
 # --- helpers ---
 def _norm_ci(s: str) -> str:
+    """Нормализует строку (lower+trim) для case-insensitive сравнения."""
     return (s or '').strip().casefold()
 
 def _dedupe_keep_order(items: List[str]) -> List[str]:
+    """Удаляет дубли из списка тегов, сохраняя порядок.
+
+    Args:
+        items: Исходные элементы.
+    Returns:
+        list[str]: Список без дубликатов.
+    """
     seen = set()
     out = []
     for it in items or []:
@@ -39,9 +57,21 @@ def _dedupe_keep_order(items: List[str]) -> List[str]:
     return out
 
 def _clean_id(s: str) -> str:
+    """Очищает идентификатор от пробелов и скобок ([], {}, ())."""
     return (s or '').strip().strip('[]{}()')
 
 def _resolve_id(storage: Storage, user_id: str) -> Optional[str]:
+    """Разрешает введённый идентификатор в полный UUID.
+
+    Поддерживаются префиксы (первые символы UUID) и идентификаторы со скобками.
+
+    Args:
+        storage: Экземпляр хранилища.
+        user_id: Введённый пользователем UUID или его префикс.
+
+    Returns:
+        Optional[str]: Полный UUID или ``None``, если найти однозначно не удалось.
+    """
     wanted = _clean_id(user_id)
     books = storage.load()
     if len(wanted) >= 36:
@@ -59,6 +89,7 @@ def _resolve_id(storage: Storage, user_id: str) -> Optional[str]:
 
 # --- commands ---
 def cmd_add(args, storage: Storage):
+    """Добавляет книгу из аргументов командной строки."""
     book = Book.create(
         title=args.title, author=args.author, year=args.year,
         genre=args.genre, tags=args.tags, isbn=args.isbn, pages=args.pages
@@ -74,6 +105,7 @@ def cmd_add(args, storage: Storage):
         print(msg)
 
 def cmd_list(args, storage: Storage):
+    """Выводит список книг (с опциональным поиском/сортировкой)."""
     books = storage.load()
     books = sort_books(books, by=args.by, reverse=args.desc, secondary=args.secondary)
     if args.query or args.author or args.title or args.year or args.genre or args.tag or args.isbn:
@@ -102,6 +134,7 @@ def cmd_list(args, storage: Storage):
         print(f'\nВсего: {len(books)}')
 
 def cmd_find(args, storage: Storage):
+    """Выполняет поиск и печатает результаты."""
     books = storage.load()
     res = search(
         books,
@@ -117,11 +150,13 @@ def cmd_find(args, storage: Storage):
     print(f'\nНайдено: {len(res)}')
 
 def cmd_sort(args, storage: Storage):
+    """Сортирует и печатает список книг."""
     books = storage.load()
     books = sort_books(books, by=args.by, reverse=args.desc, secondary=args.secondary)
     _print_table(books, limit=args.limit)
 
 def cmd_show(args, storage: Storage):
+    """Показывает подробную информацию по книге."""
     rid = _resolve_id(storage, args.id)
     if not rid:
         return
@@ -141,10 +176,8 @@ def cmd_show(args, storage: Storage):
         for i, q in enumerate(b.quotes, 1):
             print(f'  {i:>2}. {q}')
 
-def _equal_tags(a, b):
-    return [_norm_ci(x) for x in (a or [])] == [_norm_ci(x) for x in (b or [])]
-
 def cmd_update(args, storage: Storage):
+    """Обновляет поля книги. Поля, не указанные в аргументах, остаются без изменений."""
     rid = _resolve_id(storage, args.id)
     if not rid:
         return
@@ -154,77 +187,41 @@ def cmd_update(args, storage: Storage):
         return
 
     notes: List[str] = []
-    changed = False
 
-    # --- genre ---
     if args.genre is not None:
         if b.genre is not None and _norm_ci(b.genre) == _norm_ci(args.genre):
             notes.append(f'Жанр «{args.genre}» уже был установлен ранее.')
-        else:
-            b.genre = args.genre
-            changed = True
+        b.genre = args.genre
 
-    # --- pages ---
     if args.pages is not None:
         if b.pages is not None and b.pages == args.pages:
             notes.append(f'Число страниц {args.pages} уже было установлено ранее.')
-        else:
-            b.pages = args.pages
-            changed = True
+        b.pages = args.pages
 
-    # --- tags (перезапись списка, но только если он реально изменился) ---
     if args.tags is not None:
         provided = _dedupe_keep_order(args.tags)
-        if _equal_tags(b.tags, provided):
-            notes.append('Список тегов не изменился: ' + ', '.join(provided))
-        else:
-            # Дополнительно сообщим, какие из переданных уже были
-            existed_norm = {_norm_ci(t) for t in (b.tags or [])}
-            already = [t for t in provided if _norm_ci(t) in existed_norm]
-            if already:
-                notes.append('Теги уже были: ' + ', '.join(already))
-            b.tags = provided
-            changed = True
+        existed_norm = {_norm_ci(t) for t in (b.tags or [])}
+        already = [t for t in provided if _norm_ci(t) in existed_norm]
+        if already:
+            notes.append('Теги уже были: ' + ', '.join(already))
+        b.tags = provided
 
-    # --- остальные поля ---
     if args.title is not None:
-        if _norm_ci(b.title) == _norm_ci(args.title):
-            notes.append('Название не изменилось.')
-        else:
-            b.title = args.title
-            changed = True
-
+        b.title = args.title
     if args.author is not None:
-        if _norm_ci(b.author) == _norm_ci(args.author):
-            notes.append('Автор не изменился.')
-        else:
-            b.author = args.author
-            changed = True
-
+        b.author = args.author
     if args.year is not None:
-        if b.year == args.year:
-            notes.append(f'Год {args.year} уже был установлен ранее.')
-        else:
-            b.year = args.year
-            changed = True
-
+        b.year = args.year
     if args.isbn is not None:
-        if _norm_ci(b.isbn) == _norm_ci(args.isbn):
-            notes.append('ISBN не изменился.')
-        else:
-            b.isbn = args.isbn
-            changed = True
+        b.isbn = args.isbn
 
-    if changed:
-        storage.update(b)
-        print('Книга обновлена.')
-    else:
-        print('Изменений нет.')
-
+    from_changed = storage.update(b)
+    print('Книга обновлена.' if from_changed else 'Книга не найдена.')
     for line in notes:
         print('  • ' + line)
 
 def cmd_remove(args, storage: Storage):
+    """Удаляет книгу по UUID/префиксу."""
     rid = _resolve_id(storage, args.id)
     if not rid:
         return
@@ -232,9 +229,11 @@ def cmd_remove(args, storage: Storage):
     print('Удалено.' if ok else 'Книга не найдена.')
 
 def _norm_quote(s: str) -> str:
+    """Нормализует цитату (схлопывает пробелы и приводит к нижнему регистру)."""
     return re.sub(r'\s+', ' ', (s or '')).strip().casefold()
 
 def cmd_add_quote(args, storage: Storage):
+    """Добавляет цитату к книге (дубликаты игнорируются регистронезависимо)."""
     rid = _resolve_id(storage, args.id)
     if not rid:
         return
@@ -255,6 +254,7 @@ def cmd_add_quote(args, storage: Storage):
     print('Цитата добавлена.')
 
 def cmd_del_quote(args, storage: Storage):
+    """Удаляет цитату по индексу (1..n) у указанной книги."""
     rid = _resolve_id(storage, args.id)
     if not rid:
         return
@@ -271,9 +271,11 @@ def cmd_del_quote(args, storage: Storage):
     print('Удалена цитата:', removed)
 
 def cmd_export_csv(args, storage: Storage):
+    """Экспортирует текущую базу в CSV."""
     n = storage.export_csv(args.path)
     print(f'Экспортировано записей: {n} → {args.path}')
 
 def cmd_import_csv(args, storage: Storage):
+    """Импортирует записи из CSV (см. :meth:`Storage.import_csv`)."""
     n = storage.import_csv(args.path)
     print(f'Импортировано/обновлено записей: {n} (дубликаты пропущены)')

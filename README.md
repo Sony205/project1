@@ -1,22 +1,24 @@
-# booklib — локальная база рядом с main.py
+# booklib — CLI для домашней библиотеки (с докстрингами и Sphinx)
 
-По умолчанию база хранится в файле **`library.json` рядом с `main.py`** (корень проекта).
-Переопределить путь можно через `--db` или переменную окружения `BOOKLIB_PATH`.
+* Докстринги в стиле Google на всех модулях/функциях/классах.
+* База по умолчанию: `./library.json` рядом с `main.py`.
+* Sphinx-конфигурация в `docs/` (`autodoc`, `napoleon`, `viewcode`).
 
-Остальной функционал:
-- добавление/удаление/обновление, поиск/сортировка;
-- антидубликаты книг (ISBN или title+author+year);
-- цитаты с защитой от дублей (без регистра, пробелы схлопываются);
-- UUID‑префиксы и автоочистка скобок во всех командах с `id`;
-- CSV импорт/экспорт.
+## Проверка docstring через `help()`
+```python
+from booklib.storage import Storage
+help(Storage)
 
-## Примеры (PowerShell)
-```powershell
-py -3 .\main.py add -t "Пикник на обочине" -a "Аркадий и Борис Стругацкие" -y 1972 -g "фантастика"
-py -3 .\main.py list --long
+from booklib.models import Book
+help(Book.create)
+```
 
-# Обновление/просмотр/удаление по префиксу UUID (первые 8 символов)
-py -3 .\main.py update "8b6c0d2f" -g "фантастика" --pages 256 -T "классика" "советская"
-py -3 .\main.py show "8b6c0d2f"
-py -3 .\main.py remove "8b6c0d2f"
+## Генерация документации
+```bash
+pip install -r requirements.txt
+cd docs
+sphinx-build -b html . _build/html
+# или
+make html           # Linux/Mac
+.\make.bat html     # Windows
 ```

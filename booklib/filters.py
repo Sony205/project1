@@ -1,8 +1,16 @@
+"""Фильтры поиска и сортировки."""
 from __future__ import annotations
 from typing import List, Iterable, Optional
 from .models import Book
 
 def _norm(s: Optional[str]) -> str:
+    """Нормализует строку (lower+trim).
+
+    Args:
+        s: Входная строка.
+    Returns:
+        str: Нормализованный вариант.
+    """
     return (s or '').casefold().strip()
 
 def search(
@@ -16,6 +24,22 @@ def search(
     isbn: Optional[str] = None,
     exact: bool = False,
 ) -> List[Book]:
+    """Выполняет поиск по коллекции книг.
+
+    Args:
+        books: Коллекция книг.
+        query: Общая строка поиска (по автору и названию).
+        author: Автор.
+        title: Название.
+        year: Год издания.
+        genre: Жанр.
+        tag: Тег (ищется среди списка тегов).
+        isbn: ISBN.
+        exact: Если ``True``, строки сравниваются строго (без подстрок).
+
+    Returns:
+        list[Book]: Отфильтрованные книги.
+    """
     q = _norm(query); a = _norm(author); t = _norm(title)
     g = _norm(genre); tg = _norm(tag); i = _norm(isbn)
 
@@ -50,6 +74,17 @@ def sort_books(
     reverse: bool = False,
     secondary: Optional[str] = None,
 ) -> List[Book]:
+    """Сортирует книги по указанному полю с необязательным вторичным ключом.
+
+    Args:
+        books: Коллекция книг.
+        by: Поле сортировки (``title``, ``author``, ``year``, ``genre``, ``added_at``).
+        reverse: Обратный порядок.
+        secondary: Вторичное поле сортировки (или ``None``).
+
+    Returns:
+        list[Book]: Отсортированный список.
+    """
     valid = {'title','author','year','genre','added_at'}
     if by not in valid:
         by = 'title'

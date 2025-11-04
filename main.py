@@ -1,3 +1,8 @@
+"""Точка входа CLI-приложения `booklib`.
+
+Поддерживаемые команды см. ``booklib --help``. Для генерации документации
+используется Sphinx (``docs/``).
+"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
@@ -7,12 +12,26 @@ from booklib.storage import Storage
 from booklib import commands as C
 
 def positive_int(val: str) -> int:
+    """Проверяет, что число положительное (>0).
+
+    Args:
+        val: Строка с целым числом.
+    Returns:
+        int: Значение, преобразованное к int.
+    Raises:
+        argparse.ArgumentTypeError: Если число <= 0.
+    """
     x = int(val)
     if x <= 0:
         raise argparse.ArgumentTypeError('должно быть > 0')
     return x
 
 def build_parser() -> argparse.ArgumentParser:
+    """Создаёт парсер аргументов командной строки.
+
+    Returns:
+        argparse.ArgumentParser: Сконфигурированный парсер.
+    """
     p = argparse.ArgumentParser(prog='booklib', description='Домашняя книжная библиотека (CLI)')
     p.add_argument('--db', help='путь к JSON-файлу (по умолчанию рядом с main.py: library.json)')
     sub = p.add_subparsers(dest='cmd', required=True)
@@ -105,6 +124,7 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 def main(argv=None):
+    """Запускает парсер и делегирует выполнение выбранной команде."""
     parser = build_parser()
     args = parser.parse_args(argv)
     storage = Storage(args.db) if args.db else Storage()
