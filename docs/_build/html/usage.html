@@ -50,6 +50,19 @@
 <span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="o">-</span><span class="n">b</span> <span class="n">html</span> <span class="o">.</span> <span class="n">_build</span><span class="o">/</span><span class="n">html</span>
 </pre></div>
 </div>
+<section id="sqlite">
+<h2>Использование SQLite<a class="headerlink" href="#sqlite" title="Link to this heading">¶</a></h2>
+<p>По расширению пути <cite>–db</cite> выбирается бэкенд:
+- <cite>*.json</cite> — JSON‑хранилище;
+- <cite>*.db</cite>, <cite>*.sqlite</cite>, <cite>*.sqlite3</cite> — SQLite.</p>
+<dl class="simple">
+<dt>Примеры::</dt><dd><p>python main.py –db library.db add -t “Название” -a “Автор”
+python main.py –db library.db list –long</p>
+</dd>
+<dt>Миграция из JSON в SQLite::</dt><dd><p>python main.py migrate-sqlite –src library.json –dst library.db</p>
+</dd>
+</dl>
+</section>
 </section>
 
 
@@ -79,7 +92,10 @@
 </search>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Быстрый старт</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Быстрый старт</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sqlite">Использование SQLite</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API‑документация</a></li>
 </ul>
 

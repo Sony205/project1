@@ -311,5 +311,29 @@
     "pages": 352,
     "quotes": [],
     "added_at": "2025-10-31T10:28:15Z"
+  },
+  {
+    "id": "b75429a7-22b9-4482-a00d-77e559e786c7",
+    "title": "Дневной дозор",
+    "author": "Сергей Лукьяненко",
+    "year": 2005,
+    "genre": "боевик",
+    "tags": [],
+    "isbn": null,
+    "pages": null,
+    "quotes": [],
+    "added_at": "2025-11-08T11:32:06Z"
+  },
+  {
+    "id": "d92bb0ed-ef6c-48b4-8bac-8e957380d7a5",
+    "title": "Ночной дозор",
+    "author": "Сергей Лукьяненко",
+    "year": 2003,
+    "genre": "боевик",
+    "tags": [],
+    "isbn": null,
+    "pages": null,
+    "quotes": [],
+    "added_at": "2025-11-08T11:33:16Z"
   }
 ]

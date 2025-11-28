@@ -1,112 +1,94 @@
-"""Модели данных для библиотеки.
 
-Содержит dataclass :class:`~booklib.models.Book` — основную сущность каталога,
-а также служебные функции для генерации метаданных.
-Докстринги оформлены в стиле Google (поддерживаются Sphinx Napoleon).
+"""Модель данных для приложения книжной библиотеки.
+
+Содержит dataclass `Book` с удобными фабриками `create()` и `from_dict()`.
+Совместимо с JSON/SQLite стораджами и тестами.
 """
 from __future__ import annotations
+
 from dataclasses import dataclass, field, asdict
-from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import List, Optional, Any, Dict
 import uuid
 
 def _now_iso() -> str:
-    """Возвращает текущий момент времени в ISO 8601 (UTC, сек. точности).
+    """Текущее время в ISO 8601 (UTC, сек.), с суффиксом 'Z'."""
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
-    Returns:
-        str: Строка ISO вида ``YYYY-MM-DDTHH:MM:SSZ``.
-    """
-    return datetime.utcnow().isoformat(timespec="seconds") + "Z"
+def _to_int(val: Any) -> Optional[int]:
+    if val is None or val == "":
+        return None
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return None
+
+def _to_list_str(val: Any) -> List[str]:
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return [str(x).strip() for x in val if str(x).strip()]
+    # поддержка "a;b;c" и "a, b, c"
+    s = str(val)
+    if ";" in s:
+        parts = s.split(";")
+    elif "," in s:
+        parts = s.split(",")
+    else:
+        parts = [s]
+    return [p.strip() for p in parts if p.strip()]
 
 @dataclass
 class Book:
-    """Книга в домашней библиотеке.
-
-    Атрибуты:
-        id (str): UUID книги в текстовом виде.
-        title (str): Название книги.
-        author (str): Автор(ы) книги.
-        year (Optional[int]): Год издания (если известен).
-        genre (Optional[str]): Жанр.
-        tags (List[str]): Список тегов.
-        isbn (Optional[str]): ISBN (если есть).
-        pages (Optional[int]): Количество страниц.
-        quotes (List[str]): Цитаты, привязанные к книге.
-        added_at (str): Момент добавления в ISO 8601.
-    """
+    """Книга в домашней библиотеке."""
     id: str
     title: str
     author: str
     year: Optional[int] = None
     genre: Optional[str] = None
-    tags: List[str] = field(default_factory=list)
     isbn: Optional[str] = None
     pages: Optional[int] = None
+    tags: List[str] = field(default_factory=list)
     quotes: List[str] = field(default_factory=list)
     added_at: str = field(default_factory=_now_iso)
 
+    # --- Фабрики ---
     @staticmethod
-    def create(
-        title: str,
-        author: str,
-        year: Optional[int] = None,
-        genre: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        isbn: Optional[str] = None,
-        pages: Optional[int] = None,
-    ) -> "Book":
-        """Фабричный метод создания новой книги с генерируемым UUID.
-
-        Args:
-            title: Название книги.
-            author: Автор(ы) книги.
-            year: Год издания.
-            genre: Жанр.
-            tags: Список тегов.
-            isbn: ISBN, если есть.
-            pages: Количество страниц.
-
-        Returns:
-            Book: Экземпляр книги со сгенерированным ``id``.
-        """
+    def create(title: str, author: str, *, year: Optional[int]=None,
+               genre: Optional[str]=None, isbn: Optional[str]=None,
+               pages: Optional[int]=None, tags: Optional[List[str]]=None,
+               quotes: Optional[List[str]]=None, id: Optional[str]=None) -> "Book":
         return Book(
-            id=str(uuid.uuid4()),
-            title=title.strip(),
-            author=author.strip(),
-            year=int(year) if year is not None else None,
-            genre=genre.strip() if genre else None,
-            tags=[t.strip() for t in (tags or []) if t.strip()],
-            isbn=isbn.strip() if isbn else None,
-            pages=int(pages) if pages is not None else None,
+            id = id or str(uuid.uuid4()),
+            title = str(title).strip(),
+            author = str(author).strip(),
+            year = _to_int(year),
+            genre = (genre.strip() if isinstance(genre, str) and genre.strip() else None),
+            isbn = (isbn.strip() if isinstance(isbn, str) and isbn.strip() else None),
+            pages = _to_int(pages),
+            tags = _to_list_str(tags),
+            quotes = _to_list_str(quotes),
         )
 
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "Book":
+        # допускаем разные типы данных на входе; приводим
+        return Book.create(
+            id = d.get("id"),
+            title = d.get("title") or "",
+            author = d.get("author") or "",
+            year = d.get("year"),
+            genre = d.get("genre"),
+            isbn = d.get("isbn"),
+            pages = d.get("pages"),
+            tags = d.get("tags"),
+            quotes = d.get("quotes"),
+        )
+
+    # --- Сериализация ---
     def to_dict(self) -> Dict[str, Any]:
-        """Преобразует книгу в словарь для сериализации.
-
-        Returns:
-            Dict[str, Any]: Словарь полей книги.
-        """
-        return asdict(self)
-
-    @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "Book":
-        """Создаёт книгу из словаря (например, прочитанного из JSON).
-
-        Args:
-            data: Словарь полей.
-
-        Returns:
-            Book: Восстановленный объект книги.
-        """
-        return Book(
-            id=str(data.get("id") or uuid.uuid4()),
-            title=data["title"],
-            author=data["author"],
-            year=int(data["year"]) if data.get("year") not in (None, "") else None,
-            genre=data.get("genre"),
-            tags=list(data.get("tags", [])),
-            isbn=data.get("isbn"),
-            pages=int(data["pages"]) if data.get("pages") not in (None, "") else None,
-            quotes=list(data.get("quotes", [])),
-            added_at=data.get("added_at") or _now_iso(),
-        )
+        d = asdict(self)
+        # Нормализуем пустые строки к None для единообразия
+        d["genre"] = self.genre if self.genre else None
+        d["isbn"] = self.isbn if self.isbn else None
+        return d

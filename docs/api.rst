@@ -25,6 +25,13 @@ API‑документация
    :undoc-members:
    :show-inheritance:
 
+Модуль ``booklib.storage_sqlite``
+---------------------------------
+.. automodule:: booklib.storage_sqlite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Модуль ``booklib.filters``
 --------------------------
 
