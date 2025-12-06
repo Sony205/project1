@@ -31,15 +31,32 @@
           <div class="body" role="main">
             
   <h1>Source code for main</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span></span><span class="sd">&quot;&quot;&quot;CLI‑обёртка для книжной библиотеки `booklib`.</span>
+
+<span class="sd">Точка входа для консольной утилиты ``booklib``. Здесь собирается</span>
+<span class="sd">``argparse``‑парсер и выбирается тип хранилища (JSON или SQLite).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">booklib</span><span class="w"> </span><span class="kn">import</span> <span class="n">commands</span> <span class="k">as</span> <span class="n">C</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">booklib.commands_migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">cmd_migrate_sqlite</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">booklib.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">DEFAULT_PATH</span>
 
+
 <div class="viewcode-block" id="get_storage_for">
 <a class="viewcode-back" href="../api.html#main.get_storage_for">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_storage_for</span><span class="p">(</span><span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Возвращает подходящее хранилище по пути к базе данных.</span>
+
+<span class="sd">    Если расширение файла указывает на SQLite (``.db``, ``.sqlite``,</span>
+<span class="sd">    ``.sqlite3``), используется :class:`SqliteStorage`, иначе — JSON‑хранилище.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db_path: Путь к файлу базы данных или ``None``, если путь не задан.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Объект хранилища, реализующий тот же интерфейс, что и :class:`Storage`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">db_path</span><span class="p">:</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;.db&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqlite&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqlite3&#39;</span><span class="p">}:</span>
@@ -49,43 +66,285 @@
     <span class="k">return</span> <span class="n">Storage</span><span class="p">()</span></div>
 
 
+
+
 <div class="viewcode-block" id="build_parser">
 <a class="viewcode-back" href="../api.html#main.build_parser">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">build_parser</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s2">&quot;booklib&quot;</span><span class="p">)</span>
-    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--db&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;путь к базе (JSON или SQLite). По умолчанию ./library.json&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Строит и настраивает ``argparse``‑парсер для CLI.</span>
+
+<span class="sd">    Создаёт корневой парсер ``booklib`` и регистрирует подкоманды:</span>
+
+<span class="sd">    * ``add`` — добавление книги;</span>
+<span class="sd">    * ``list`` — вывод списка книг с фильтрами и сортировкой;</span>
+<span class="sd">    * ``find`` — поиск книг;</span>
+<span class="sd">    * ``sort`` — сортировка без фильтрации;</span>
+<span class="sd">    * ``show`` — подробная информация по одной книге;</span>
+<span class="sd">    * ``update`` — изменение полей книги;</span>
+<span class="sd">    * ``remove`` — удаление книги;</span>
+<span class="sd">    * ``add-quote`` / ``del-quote`` — работа с цитатами;</span>
+<span class="sd">    * ``export-csv`` / ``import-csv`` — экспорт/импорт в CSV;</span>
+<span class="sd">    * ``migrate-sqlite`` — перенос базы из JSON в SQLite.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        argparse.ArgumentParser: настроенный парсер командной строки.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;booklib&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Книжная библиотека: добавление книг, поиск и цитаты.&quot;</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--db&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">DEFAULT_PATH</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;путь к базе (JSON или SQLite). По умолчанию </span><span class="si">%(default)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">sub</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># существующие команды (объявляем, чтобы связать с вашим commands.py)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_add</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_list</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;find&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_find</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;sort&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_sort</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_show</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_update</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_remove</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;add-quote&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_add_quote</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;del-quote&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_del_quote</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;export-csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_export_csv</span><span class="p">)</span>
-    <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;import-csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_import_csv</span><span class="p">)</span>
+    <span class="c1"># --- Вспомогательные функции настройки общих аргументов ---</span>
 
-    <span class="c1"># новая команда миграции</span>
-    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;migrate-sqlite&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;миграция JSON -&gt; SQLite&#39;</span><span class="p">)</span>
-    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--src&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">DEFAULT_PATH</span><span class="p">),</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;исходный JSON (по умолчанию ./library.json)&#39;</span><span class="p">)</span>
-    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dst&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;library.db&#39;</span><span class="p">,</span>
-                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;целевой SQLite (по умолчанию library.db)&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_search_args</span><span class="p">(</span><span class="n">sp</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавляет к подкоманде аргументы фильтрации/поиска.&quot;&quot;&quot;</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;-q&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--query&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;общий текстовый поиск по автору, названию и тегам&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--author&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по автору&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--title&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по названию книги&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--year&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по году издания&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--genre&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по жанру&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--tag&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по тегу&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--isbn&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;фильтр по ISBN&quot;</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--exact&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;точное совпадение полей вместо поиска по подстроке&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_sort_args</span><span class="p">(</span>
+        <span class="n">sp</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">with_long</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавляет к подкоманде аргументы сортировки/формата вывода.&quot;&quot;&quot;</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--by&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;поле сортировки: title, author, year, genre, added_at&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--secondary&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;вторичное поле сортировки (как и для --by)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--desc&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;сортировать в обратном порядке&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--limit&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;ограничить количество выводимых записей&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">with_long</span><span class="p">:</span>
+            <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+                <span class="s2">&quot;--long&quot;</span><span class="p">,</span>
+                <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;показывать подробную информацию по каждой книге&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># --- Команды ---</span>
+
+    <span class="c1"># add</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;добавить новую книгу&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Добавляет книгу в JSON/SQLite‑базу.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--title&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;название книги&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--author&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;автор книги&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--year&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;год издания&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--genre&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;жанр книги&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--tags&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;список тегов (через пробел)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--isbn&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;ISBN книги&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--pages&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;количество страниц&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_add</span><span class="p">)</span>
+
+    <span class="c1"># list</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;list&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;показать список книг&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Выводит список книг с опциональным поиском и сортировкой.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_search_args</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+    <span class="n">add_sort_args</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">with_long</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_list</span><span class="p">)</span>
+
+    <span class="c1"># find</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;find&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;найти книги по условиям&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Поиск книг по фильтрам и вывод результатов.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_search_args</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+    <span class="n">add_sort_args</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">with_long</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_find</span><span class="p">)</span>
+
+    <span class="c1"># sort</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;отсортировать все книги&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Выводит все книги, отсортированные по указанному полю.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">add_sort_args</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">with_long</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_sort</span><span class="p">)</span>
+
+    <span class="c1"># show</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;show&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;показать подробную информацию по книге&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;идентификатор книги (можно укороченный UUID)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_show</span><span class="p">)</span>
+
+    <span class="c1"># update</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;update&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;обновить поля книги&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Изменяет поля существующей книги по её идентификатору.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;идентификатор книги&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--title&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новое название&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--author&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новый автор&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--year&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новый год издания&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--genre&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новый жанр&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--tags&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;полный новый список тегов (перезаписывает старые)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--isbn&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новый ISBN&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--pages&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;новое количество страниц&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_update</span><span class="p">)</span>
+
+    <span class="c1"># remove</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;удалить книгу из библиотеки&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;идентификатор книги&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_remove</span><span class="p">)</span>
+
+    <span class="c1"># add-quote</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;add-quote&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;добавить цитату к книге&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;идентификатор книги&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;текст цитаты&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_add_quote</span><span class="p">)</span>
+
+    <span class="c1"># del-quote</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;del-quote&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;удалить цитату из книги&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;идентификатор книги&quot;</span><span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;номер цитаты (начиная с 1)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_del_quote</span><span class="p">)</span>
+
+    <span class="c1"># export-csv</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;export-csv&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;экспортировать базу в CSV‑файл&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;путь к CSV‑файлу, в который будет выполнен экспорт&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_export_csv</span><span class="p">)</span>
+
+    <span class="c1"># import-csv</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;import-csv&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;импортировать записи из CSV‑файла&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;путь к CSV‑файлу с данными книг&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">cmd_import_csv</span><span class="p">)</span>
+
+    <span class="c1"># migrate-sqlite</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;migrate-sqlite&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;миграция JSON → SQLite&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Создаёт SQLite‑базу и копирует в неё данные из JSON‑файла.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--src&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">DEFAULT_PATH</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;исходный JSON (по умолчанию </span><span class="si">%(default)s</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--dst&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;library.db&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;целевой SQLite‑файл (по умолчанию </span><span class="si">%(default)s</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">sp</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cmd_migrate_sqlite</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">p</span></div>
+
 
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../api.html#main.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Точка входа для запуска из консоли.</span>
+
+<span class="sd">    Разбирает аргументы командной строки, создаёт подходящее хранилище и</span>
+<span class="sd">    передаёт управление выбранной подкоманде.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">build_parser</span><span class="p">()</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">storage</span> <span class="o">=</span> <span class="n">get_storage_for</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
     <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">storage</span><span class="p">)</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

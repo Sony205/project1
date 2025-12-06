@@ -6,11 +6,21 @@ from contextlib import contextmanager
 from .models import Book
 
 def _norm(s: Optional[str]) -> str:
+    """Приводит строку к нормальной форме для сравнения (lower+trim).
+
+    Аналогично :func:`booklib.storage._norm`, используется для поиска
+    дубликатов и нормализации строковых полей.
+    """
     return (s or "").strip().casefold()
 
 class SqliteStorage:
     """Хранилище на SQLite; интерфейс совместим с JSON‑Storage."""
     def __init__(self, path: str):
+        """Создаёт объект хранилища и инициализирует файл БД.
+
+        Args:
+            path: Путь к файлу SQLite‑базы данных.
+        """
         self.path = path
         d = os.path.dirname(self.path) or "."
         os.makedirs(d, exist_ok=True)
@@ -18,6 +28,11 @@ class SqliteStorage:
 
     @contextmanager
     def _db(self):
+        """Контекстный менеджер подключения к SQLite.
+
+        Открывает соединение, включает проверку внешних ключей и гарантирует
+        закрытие соединения после выхода из блока ``with``.
+        """
         con = sqlite3.connect(self.path)
         try:
             con.row_factory = sqlite3.Row
@@ -27,6 +42,10 @@ class SqliteStorage:
             con.close()
 
     def _init_db(self):
+        """Создаёт таблицы и индексы, если их ещё нет.
+
+        Метод вызывается один раз при инициализации хранилища.
+        """
         with self._db() as con:
             con.executescript(
                 """
@@ -62,6 +81,7 @@ class SqliteStorage:
             con.commit()
 
     def _row_to_book(self, con, row: sqlite3.Row) -> Book:
+        """Преобразует строку из БД в объект :class:`Book`."""
         tags = [r["tag"] for r in con.execute("SELECT tag FROM tags WHERE book_id=?;", (row["id"],))]
         quotes = [r["text"] for r in con.execute("SELECT text FROM quotes WHERE book_id=? ORDER BY id;", (row["id"],))]
         return Book(
@@ -71,11 +91,16 @@ class SqliteStorage:
         )
 
     def load(self) -> List[Book]:
+        """Возвращает все книги из базы, отсортированные по названию и автору."""
         with self._db() as con:
             cur = con.execute("SELECT * FROM books ORDER BY title, author;")
             return [self._row_to_book(con, r) for r in cur.fetchall()]
 
     def save(self, books: List[Book]) -> None:
+        """Полностью перезаписывает содержимое таблиц книгами из списка.
+
+        Старые записи и связанные теги/цитаты удаляются.
+        """
         with self._db() as con:
             con.execute("DELETE FROM quotes;")
             con.execute("DELETE FROM tags;")
@@ -94,6 +119,18 @@ class SqliteStorage:
             con.commit()
 
     def _find_duplicate(self, con, cand: Book):
+        """Ищет дубликат книги в базе.
+
+        Сначала проверяется совпадение ISBN, затем пара (title, author) и
+        необязательный год издания.
+
+        Args:
+            con: Открытое соединение SQLite.
+            cand: Книга‑кандидат.
+
+        Returns:
+            Найденный дубликат :class:`Book` или ``None``.
+        """
         if cand.isbn:
             row = con.execute("SELECT * FROM books WHERE isbn IS NOT NULL AND LOWER(isbn)=LOWER(?);", (cand.isbn,)).fetchone()
             if row: return self._row_to_book(con, row)
@@ -105,6 +142,15 @@ class SqliteStorage:
         return None
 
     def add(self, book: Book) -> Tuple[bool, Optional[Book]]:
+        """Добавляет новую книгу в базу.
+
+        Args:
+            book: Книга для добавления.
+
+        Returns:
+            tuple: ``(True, None)``, если книга добавлена,
+            либо ``(False, dup)``, где ``dup`` — найденный дубликат.
+        """
         with self._db() as con:
             dup = self._find_duplicate(con, book)
             if dup: return False, dup
@@ -122,11 +168,27 @@ class SqliteStorage:
             return True, None
 
     def get(self, book_id: str) -> Optional[Book]:
+        """Возвращает книгу по идентификатору.
+
+        Args:
+            book_id: Идентификатор книги.
+
+        Returns:
+            Найденный объект :class:`Book` или ``None``.
+        """
         with self._db() as con:
             row = con.execute("SELECT * FROM books WHERE id=?;", (book_id,)).fetchone()
             return self._row_to_book(con, row) if row else None
 
     def update(self, book: Book) -> bool:
+        """Обновляет существующую книгу.
+
+        Args:
+            book: Книга с обновлёнными полями.
+
+        Returns:
+            bool: ``True``, если запись обновлена, иначе ``False``.
+        """
         with self._db() as con:
             if not con.execute("SELECT 1 FROM books WHERE id=?;", (book.id,)).fetchone():
                 return False
@@ -146,6 +208,14 @@ class SqliteStorage:
             return True
 
     def delete(self, book_id: str) -> bool:
+        """Удаляет книгу по идентификатору.
+
+        Args:
+            book_id: Идентификатор книги.
+
+        Returns:
+            bool: ``True``, если книга была удалена.
+        """
         with self._db() as con:
             cur = con.execute("DELETE FROM books WHERE id=?;", (book_id,))
             con.commit()
@@ -154,6 +224,14 @@ class SqliteStorage:
     CSV_FIELDS = ["id","title","author","year","genre","tags","isbn","pages","quotes","added_at"]
 
     def export_csv(self, csv_path: str) -> int:
+        """Экспортирует все книги в CSV‑файл.
+
+        Args:
+            csv_path: Путь к итоговому CSV‑файлу.
+
+        Returns:
+            int: Количество экспортированных записей.
+        """
         import csv
         books = self.load()
         with open(csv_path, "w", encoding="utf-8", newline="") as f:
@@ -167,6 +245,14 @@ class SqliteStorage:
         return len(books)
 
     def import_csv(self, csv_path: str) -> int:
+        """Импортирует книги из CSV‑файла, обновляя или добавляя записи.
+
+        Args:
+            csv_path: Путь к входному CSV‑файлу.
+
+        Returns:
+            int: Количество реально добавленных/обновлённых книг.
+        """
         import csv
         count = 0
         with self._db() as con, open(csv_path, "r", encoding="utf-8") as f:

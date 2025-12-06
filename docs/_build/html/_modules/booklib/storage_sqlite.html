@@ -39,6 +39,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Book</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_norm</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Приводит строку к нормальной форме для сравнения (lower+trim).</span>
+
+<span class="sd">    Аналогично :func:`booklib.storage._norm`, используется для поиска</span>
+<span class="sd">    дубликатов и нормализации строковых полей.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SqliteStorage">
@@ -46,6 +51,11 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SqliteStorage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Хранилище на SQLite; интерфейс совместим с JSON‑Storage.&quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Создаёт объект хранилища и инициализирует файл БД.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Путь к файлу SQLite‑базы данных.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;.&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -53,6 +63,11 @@
 
     <span class="nd">@contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Контекстный менеджер подключения к SQLite.</span>
+
+<span class="sd">        Открывает соединение, включает проверку внешних ключей и гарантирует</span>
+<span class="sd">        закрытие соединения после выхода из блока ``with``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">con</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
@@ -62,6 +77,10 @@
             <span class="n">con</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Создаёт таблицы и индексы, если их ещё нет.</span>
+
+<span class="sd">        Метод вызывается один раз при инициализации хранилища.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">con</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
@@ -97,6 +116,7 @@
             <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_row_to_book</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Book</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Преобразует строку из БД в объект :class:`Book`.&quot;&quot;&quot;</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT tag FROM tags WHERE book_id=?;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],))]</span>
         <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT text FROM quotes WHERE book_id=? ORDER BY id;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],))]</span>
         <span class="k">return</span> <span class="n">Book</span><span class="p">(</span>
@@ -108,6 +128,7 @@
 <div class="viewcode-block" id="SqliteStorage.load">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.load">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Book</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Возвращает все книги из базы, отсортированные по названию и автору.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM books ORDER BY title, author;&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_to_book</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span></div>
@@ -116,6 +137,10 @@
 <div class="viewcode-block" id="SqliteStorage.save">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.save">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Book</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Полностью перезаписывает содержимое таблиц книгами из списка.</span>
+
+<span class="sd">        Старые записи и связанные теги/цитаты удаляются.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM quotes;&quot;</span><span class="p">)</span>
             <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM tags;&quot;</span><span class="p">)</span>
@@ -135,6 +160,18 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">con</span><span class="p">,</span> <span class="n">cand</span><span class="p">:</span> <span class="n">Book</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ищет дубликат книги в базе.</span>
+
+<span class="sd">        Сначала проверяется совпадение ISBN, затем пара (title, author) и</span>
+<span class="sd">        необязательный год издания.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            con: Открытое соединение SQLite.</span>
+<span class="sd">            cand: Книга‑кандидат.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Найденный дубликат :class:`Book` или ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cand</span><span class="o">.</span><span class="n">isbn</span><span class="p">:</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM books WHERE isbn IS NOT NULL AND LOWER(isbn)=LOWER(?);&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">isbn</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">row</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_to_book</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
@@ -148,6 +185,15 @@
 <div class="viewcode-block" id="SqliteStorage.add">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.add">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book</span><span class="p">:</span> <span class="n">Book</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Book</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Добавляет новую книгу в базу.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            book: Книга для добавления.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: ``(True, None)``, если книга добавлена,</span>
+<span class="sd">            либо ``(False, dup)``, где ``dup`` — найденный дубликат.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">dup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_duplicate</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">book</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dup</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dup</span>
@@ -168,6 +214,14 @@
 <div class="viewcode-block" id="SqliteStorage.get">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.get">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Book</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Возвращает книгу по идентификатору.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            book_id: Идентификатор книги.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Найденный объект :class:`Book` или ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM books WHERE id=?;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_to_book</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="k">if</span> <span class="n">row</span> <span class="k">else</span> <span class="kc">None</span></div>
@@ -176,6 +230,14 @@
 <div class="viewcode-block" id="SqliteStorage.update">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book</span><span class="p">:</span> <span class="n">Book</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Обновляет существующую книгу.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            book: Книга с обновлёнными полями.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ``True``, если запись обновлена, иначе ``False``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT 1 FROM books WHERE id=?;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">():</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -198,6 +260,14 @@
 <div class="viewcode-block" id="SqliteStorage.delete">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.delete">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Удаляет книгу по идентификатору.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            book_id: Идентификатор книги.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ``True``, если книга была удалена.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM books WHERE id=?;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
             <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
@@ -209,6 +279,14 @@
 <div class="viewcode-block" id="SqliteStorage.export_csv">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.export_csv">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Экспортирует все книги в CSV‑файл.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            csv_path: Путь к итоговому CSV‑файлу.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Количество экспортированных записей.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
         <span class="n">books</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -225,6 +303,14 @@
 <div class="viewcode-block" id="SqliteStorage.import_csv">
 <a class="viewcode-back" href="../../api.html#booklib.storage_sqlite.SqliteStorage.import_csv">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">import_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Импортирует книги из CSV‑файла, обновляя или добавляя записи.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            csv_path: Путь к входному CSV‑файлу.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Количество реально добавленных/обновлённых книг.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">()</span> <span class="k">as</span> <span class="n">con</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

@@ -305,42 +305,115 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.add" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Добавляет новую книгу в базу.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book</strong> – Книга для добавления.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(True,</span> <span class="pre">None)</span></code>, если книга добавлена,
+либо <code class="docutils literal notranslate"><span class="pre">(False,</span> <span class="pre">dup)</span></code>, где <code class="docutils literal notranslate"><span class="pre">dup</span></code> — найденный дубликат.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.delete" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Удаляет книгу по идентификатору.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book_id</strong> – Идентификатор книги.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code>, если книга была удалена.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.export_csv">
 <span class="sig-name descname"><span class="pre">export_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.export_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.export_csv" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Экспортирует все книги в CSV‑файл.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>csv_path</strong> – Путь к итоговому CSV‑файлу.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Количество экспортированных записей.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.get" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Возвращает книгу по идентификатору.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book_id</strong> – Идентификатор книги.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Найденный объект <code class="xref py py-class docutils literal notranslate"><span class="pre">Book</span></code> или <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.import_csv">
 <span class="sig-name descname"><span class="pre">import_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.import_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.import_csv" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Импортирует книги из CSV‑файла, обновляя или добавляя записи.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>csv_path</strong> – Путь к входному CSV‑файлу.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Количество реально добавленных/обновлённых книг.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.load" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Возвращает все книги из базы, отсортированные по названию и автору.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">books</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.save" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Полностью перезаписывает содержимое таблиц книгами из списка.</p>
+<p>Старые записи и связанные теги/цитаты удаляются.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="booklib.storage_sqlite.SqliteStorage.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">book</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#booklib.models.Book" title="booklib.models.Book"><span class="pre">Book</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/booklib/storage_sqlite.html#SqliteStorage.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#booklib.storage_sqlite.SqliteStorage.update" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Обновляет существующую книгу.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>book</strong> – Книга с обновлёнными полями.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code>, если запись обновлена, иначе <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -471,20 +544,59 @@
 </section>
 <section id="module-main">
 <span id="main"></span><h2>Модуль <code class="docutils literal notranslate"><span class="pre">main</span></code><a class="headerlink" href="#module-main" title="Link to this heading">¶</a></h2>
+<p>CLI‑обёртка для книжной библиотеки <cite>booklib</cite>.</p>
+<p>Точка входа для консольной утилиты <code class="docutils literal notranslate"><span class="pre">booklib</span></code>. Здесь собирается
+<code class="docutils literal notranslate"><span class="pre">argparse</span></code>‑парсер и выбирается тип хранилища (JSON или SQLite).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="main.build_parser">
-<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">build_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#build_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.build_parser" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">build_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArgumentParser</span></span></span><a class="reference internal" href="_modules/main.html#build_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.build_parser" title="Link to this definition">¶</a></dt>
+<dd><p>Строит и настраивает <code class="docutils literal notranslate"><span class="pre">argparse</span></code>‑парсер для CLI.</p>
+<p>Создаёт корневой парсер <code class="docutils literal notranslate"><span class="pre">booklib</span></code> и регистрирует подкоманды:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">add</span></code> — добавление книги;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code> — вывод списка книг с фильтрами и сортировкой;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find</span></code> — поиск книг;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort</span></code> — сортировка без фильтрации;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show</span></code> — подробная информация по одной книге;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update</span></code> — изменение полей книги;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove</span></code> — удаление книги;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add-quote</span></code> / <code class="docutils literal notranslate"><span class="pre">del-quote</span></code> — работа с цитатами;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">export-csv</span></code> / <code class="docutils literal notranslate"><span class="pre">import-csv</span></code> — экспорт/импорт в CSV;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">migrate-sqlite</span></code> — перенос базы из JSON в SQLite.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>настроенный парсер командной строки.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>argparse.ArgumentParser</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.get_storage_for">
 <span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">get_storage_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#get_storage_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.get_storage_for" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Возвращает подходящее хранилище по пути к базе данных.</p>
+<p>Если расширение файла указывает на SQLite (<code class="docutils literal notranslate"><span class="pre">.db</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>), используется <code class="xref py py-class docutils literal notranslate"><span class="pre">SqliteStorage</span></code>, иначе — JSON‑хранилище.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_path</strong> – Путь к файлу базы данных или <code class="docutils literal notranslate"><span class="pre">None</span></code>, если путь не задан.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Объект хранилища, реализующий тот же интерфейс, что и <code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="main.main">
 <span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Точка входа для запуска из консоли.</p>
+<p>Разбирает аргументы командной строки, создаёт подходящее хранилище и
+передаёт управление выбранной подкоманде.</p>
+</dd></dl>
 
 </section>
 </section>
